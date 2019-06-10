@@ -1,40 +1,23 @@
 package red.github.meowsic;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.SyncFailedException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.StatementEvent;
 
 public class SearchListActivity extends AppCompatActivity {
 
@@ -117,6 +100,24 @@ public class SearchListActivity extends AppCompatActivity {
 
 
         }
+
+        searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Redirect to the music player page.
+                Intent playerIntent = new Intent();
+                playerIntent.setClass(SearchListActivity.this, MusicPlayer.class);
+
+                playerIntent.putExtra("mid", musicItem.get((int) id).getMid());      // Send the music mid.
+                playerIntent.putExtra("songName", musicItem.get((int) id).getMusicName());
+                playerIntent.putExtra("albumName", musicItem.get((int) id).getAlbumName());
+                playerIntent.putExtra("artistName", musicItem.get((int) id).getMusicArtist());
+
+                startActivity(playerIntent);
+
+                System.out.println(musicItem.get((int) id).getMid());
+            }
+        });
 
     }
 
