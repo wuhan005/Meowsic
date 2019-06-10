@@ -15,6 +15,22 @@ public class MusicItem {
         this.mid = mid;
     }
 
+    public String getMusicName(){
+        return this.musicName;
+    }
+
+    public String getMusicArtist(){
+        return this.musicArtist;
+    }
+
+    public String getAlbumName(){
+        return this.albumName;
+    }
+
+    public String getAlbumPicture(){
+        return this.albumPicture;
+    }
+
     public String getMid(){
         return this.mid;
     }

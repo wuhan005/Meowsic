@@ -71,6 +71,7 @@ public class SearchListActivity extends AppCompatActivity {
 
                 try {
                     jsonData = new JSONObject(content);
+                    jsonData = jsonData.getJSONObject("data").getJSONObject("song");
                     setUI();
 
                 }catch (Exception e){
@@ -87,12 +88,29 @@ public class SearchListActivity extends AppCompatActivity {
     }
 
     private void setUI(){
-//        this.searchListView.
+        // Set the data.
+        try{
+            JSONArray musicList = this.jsonData.getJSONArray("list");
 
-        musicItem.add(new MusicItem("Hello","aaa","bbb", "ccc","ddd"));
+            for(int i = 0; i < this.numPerPage; i++){
+                JSONObject item = musicList.getJSONObject(i);
+                musicItem.add(new MusicItem(
+                        item.getString("songname"),
+                        item.getJSONArray("singer").getJSONObject(0).getString("name"),
+                        item.getString("albumname"),
+                        item.getString("albummid"),
+                        item.getString("songmid")
+                ));
+            }
 
-        MusicAdapter adapter = new MusicAdapter(this, R.layout.music_item, musicItem);
-        this.searchListView.setAdapter(adapter);
+            MusicAdapter adapter = new MusicAdapter(this, R.layout.music_item, musicItem);
+            this.searchListView.setAdapter(adapter);
+
+        }catch (Exception e){
+
+
+        }
+
     }
 
 }
