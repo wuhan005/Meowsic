@@ -109,9 +109,11 @@ public class SearchListActivity extends AppCompatActivity {
                 playerIntent.setClass(SearchListActivity.this, MusicPlayer.class);
 
                 playerIntent.putExtra("mid", musicItem.get((int) id).getMid());      // Send the music mid.
-                playerIntent.putExtra("songName", musicItem.get((int) id).getMusicName());
+                playerIntent.putExtra("musicName", musicItem.get((int) id).getMusicName());
                 playerIntent.putExtra("albumName", musicItem.get((int) id).getAlbumName());
                 playerIntent.putExtra("artistName", musicItem.get((int) id).getMusicArtist());
+                playerIntent.putExtra("albumPicture", musicItem.get((int) id).getAlbumPicture());
+
 
                 startActivity(playerIntent);
 
