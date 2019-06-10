@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -23,22 +24,29 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.StatementEvent;
 
 public class SearchListActivity extends AppCompatActivity {
 
     private String keyword;
+    private ListView searchListView;
 
     private int nowPage = 1;
     private int numPerPage = 10;
 
     private JSONObject jsonData;
 
+    private List<MusicItem> musicItem = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_list);
+
+        this.searchListView = findViewById(R.id.searchList);
 
         // 获取搜索关键字
         Intent searchIntent =  getIntent();
@@ -64,8 +72,7 @@ public class SearchListActivity extends AppCompatActivity {
                 try {
                     jsonData = new JSONObject(content);
                     setUI();
-                    System.out.println(jsonData.getInt("code"));
-                    System.out.println(jsonData.getJSONObject("data").getJSONObject("song").getInt("curnum"));
+
                 }catch (Exception e){
                     System.out.println(e);
                 }
@@ -80,7 +87,12 @@ public class SearchListActivity extends AppCompatActivity {
     }
 
     private void setUI(){
-        
+//        this.searchListView.
+
+        musicItem.add(new MusicItem("Hello","aaa","bbb", "ccc","ddd"));
+
+        MusicAdapter adapter = new MusicAdapter(this, R.layout.music_item, musicItem);
+        this.searchListView.setAdapter(adapter);
     }
 
 }
