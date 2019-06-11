@@ -3,7 +3,6 @@ package red.github.meowsic;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.http.Headers;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -110,6 +108,7 @@ public class MusicPlayer extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             musicService = ((MusicService.MyBinder) (service)).getService();
+            btnPlayOrPause.setEnabled(true);
             System.out.println("Service start.");
 //            musicTotal.setText(time.format(musicService.mediaPlayer.getDuration()));
         }
@@ -129,13 +128,13 @@ public class MusicPlayer extends AppCompatActivity {
                 }
                 //  由tag的变换来控制事件的调用
                 if (musicService.tag != true) {
-                    btnPlayOrPause.setText("PAUSE");
+                    btnPlayOrPause.setText("暂停");
                     //musicStatus.setText("Playing");
                     musicService.playOrPause();
                     musicService.tag = true;
 
                 } else {
-                    btnPlayOrPause.setText("PLAY");
+                    btnPlayOrPause.setText("播放");
                     //musicStatus.setText("Paused");
                     musicService.playOrPause();
                     musicService.tag = false;
@@ -201,7 +200,7 @@ public class MusicPlayer extends AppCompatActivity {
 
         Intent searchIntent =  getIntent();
 
-        TextView musicName = findViewById(R.id.musicName);
+        final TextView musicName = findViewById(R.id.musicName);
         musicName.setText(searchIntent.getStringExtra("musicName"));
 
         TextView albumName = findViewById(R.id.albumName);
@@ -215,7 +214,42 @@ public class MusicPlayer extends AppCompatActivity {
 
         // Music player UI.
         this.btnPlayOrPause = findViewById(R.id.playOrPause);
+        btnPlayOrPause.setEnabled(false);
         this.seekBar = findViewById(R.id.seekBar);
         this.musicTime = findViewById(R.id.musicTime);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser == true) {
+                    musicService.mediaPlayer.seekTo(progress);
+                    musicService.mediaPlayer.start();   // Start playing after control.
+                    btnPlayOrPause.setText("暂停");
+                    musicService.tag = true;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("asdadasdasdasd");
+        // Stop the music after exit.
+        musicService.stop();
+        handler.removeCallbacks(runnable);
+        unbindService(serviceConnection);
+        Intent intent = new Intent(this, MusicService.class);
+        stopService(intent);
     }
 }

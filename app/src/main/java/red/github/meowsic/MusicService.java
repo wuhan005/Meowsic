@@ -19,7 +19,6 @@ public class MusicService extends Service {
         this.sourceURL = intent.getStringExtra("url");
 
         mediaPlayer = new MediaPlayer();
-//        Uri uri = Uri.parse();
         System.out.println(this.sourceURL);
         try {
             mediaPlayer.setDataSource(this.sourceURL);

@@ -47,17 +47,16 @@ public class SearchListActivity extends AppCompatActivity {
     }
 
     private void searchKeyWord(){
-        final HttpURLConnection conn = null;
-
         AsyncHttpClient client = new AsyncHttpClient();
 
-        String url = "http://c.y.qq.com/soso/fcgi-bin/search_cp?aggr=1&lossless=1&cr=1&format=json&n=" + this.numPerPage + "&p=" + this.nowPage + "&w=" + this.keyword;
+        String url = "http://c.y.qq.com/soso/fcgi-bin/search_cp?ct=24&aggr=1&lossless=1&cr=1&format=json&n=" + this.numPerPage + "&p=" + this.nowPage + "&w=" + this.keyword;
 
         client.get(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, org.apache.http.Header[] headers, byte[] bytes) {
                 // Try to convert the JSON data.
                 String content = new String(bytes);
+                System.out.println(content);
 
                 try {
                     jsonData = new JSONObject(content);
