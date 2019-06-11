@@ -70,9 +70,13 @@ public class MainActivity extends AppCompatActivity {
 
                 MusicAdapter adapter = new MusicAdapter(this, R.layout.music_item, new ArrayList<MusicItem>());
                 this.musicList.setAdapter(adapter);
+                break;
 
             // 关于按钮
             case R.id.about:
+                Intent aboutIntent = new Intent();
+                aboutIntent.setClass(this, AboutActivity.class);
+                startActivity(aboutIntent);
                 break;
         }
         return super.onOptionsItemSelected(item);
