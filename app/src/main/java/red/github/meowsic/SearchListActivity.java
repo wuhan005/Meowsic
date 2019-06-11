@@ -25,7 +25,7 @@ public class SearchListActivity extends AppCompatActivity {
     private ListView searchListView;
 
     private int nowPage = 1;
-    private int numPerPage = 10;
+    private int numPerPage = 30;
 
     private JSONObject jsonData;
 

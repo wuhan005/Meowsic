@@ -56,4 +56,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/artistName" />
+
+    <Button
+        android:id="@+id/playOrPause"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="播放"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="412dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="20dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/albumName"
+        tools:layout_editor_absoluteX="-2dp">
+
+        <TextView
+            android:id="@+id/musicTime"
+            android:layout_width="75dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="00 : 00" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="271dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="28dp"
+            android:scrollbarSize="10dp" />
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

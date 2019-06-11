@@ -1,11 +1,18 @@
 package red.github.meowsic;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.http.Headers;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -16,11 +23,24 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+
 public class MusicPlayer extends AppCompatActivity {
 
     private String uuid = "233";
     private String mid;
     private String albumURLPrefix = "http://y.gtimg.cn/music/photo_new/T002R800x800M000";
+    private String musicURLPrefix = "http://dl.stream.qqmusic.qq.com/M500";
+
+    private boolean tag2 = false;
+
+    private MusicService musicService;
+
+    private SimpleDateFormat time = new SimpleDateFormat("mm:ss");
+
+    private Button btnPlayOrPause;
+    private SeekBar seekBar;
+    private TextView musicTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,6 +50,7 @@ public class MusicPlayer extends AppCompatActivity {
         this.loadInfo();
     }
 
+    // Get the music info.
     private void loadInfo(){
         // Refresh UI
         Intent searchIntent =  getIntent();
@@ -52,6 +73,11 @@ public class MusicPlayer extends AppCompatActivity {
                     JSONObject jsonData = new JSONObject(content);
                     String vkey = jsonData.getJSONObject("req").getJSONObject("data").getString("vkey");
 
+                    // Start playing.
+                    String musicURL = musicURLPrefix + mid + ".mp3?vkey=" + vkey + "&guid=" + uuid + "&fromtag=1";
+                    bindServiceConnection(musicURL);
+                    setMusicListener();
+
                     System.out.println(vkey);
 
                 }catch (Exception e){
@@ -67,6 +93,102 @@ public class MusicPlayer extends AppCompatActivity {
 
         System.out.println(this.mid);
     }
+
+    // Connect the service with activity.
+    private void bindServiceConnection(String musicURL) {
+        Intent intent = new Intent(MusicPlayer.this, MusicService.class);
+        // Put the music URL.
+        intent.putExtra("url", musicURL);
+
+        startService(intent);
+        Boolean a = bindService(intent, this.serviceConnection, BIND_AUTO_CREATE);
+        System.out.println(a);
+        System.out.println("bind service");
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            musicService = ((MusicService.MyBinder) (service)).getService();
+            System.out.println("Service start.");
+//            musicTotal.setText(time.format(musicService.mediaPlayer.getDuration()));
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicService = null;
+        }
+    };
+
+    private void setMusicListener() {
+        btnPlayOrPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (musicService.mediaPlayer != null) {
+                    seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
+                    seekBar.setMax(musicService.mediaPlayer.getDuration());
+                }
+                //  由tag的变换来控制事件的调用
+                if (musicService.tag != true) {
+                    btnPlayOrPause.setText("PAUSE");
+                    //musicStatus.setText("Playing");
+                    musicService.playOrPause();
+                    musicService.tag = true;
+
+                } else {
+                    btnPlayOrPause.setText("PLAY");
+                    //musicStatus.setText("Paused");
+                    musicService.playOrPause();
+                    musicService.tag = false;
+                }
+                if (tag2 == false) {
+                    handler.post(runnable);
+                    tag2 = true;
+                }
+            }
+        });
+
+//        btnStop.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                musicStatus.setText("Stopped");
+//                btnPlayOrPause.setText("PLAY");
+//                musicService.stop();
+//                animator.pause();
+//                musicService.tag = false;
+//            }
+//        });
+
+        //  停止服务时，必须解除绑定，写入btnQuit按钮中
+//        btnQuit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                handler.removeCallbacks(runnable);
+//                unbindService(serviceConnection);
+//                Intent intent = new Intent(MainActivity.this, MusicService.class);
+//                stopService(intent);
+//                try {
+//                    MainActivity.this.finish();
+//                } catch (Exception e) {
+//
+//                }
+//            }
+//        });
+
+    }
+
+    // Used to refresh the status of the UI.
+    public Handler handler = new Handler();
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            musicTime.setText(time.format(musicService.mediaPlayer.getCurrentPosition()));
+            seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
+            seekBar.setMax(musicService.mediaPlayer.getDuration());
+            //musicTotal.setText(time.format(musicService.mediaPlayer.getDuration()));
+            handler.postDelayed(runnable, 200);
+
+        }
+    };
 
     private void setUI(){
         DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -90,5 +212,10 @@ public class MusicPlayer extends AppCompatActivity {
 
         ImageView albumImage = findViewById(R.id.albumPicture);
         ImageLoader.getInstance().displayImage(this.albumURLPrefix + searchIntent.getStringExtra("albumPicture") + ".jpg", albumImage, options);
+
+        // Music player UI.
+        this.btnPlayOrPause = findViewById(R.id.playOrPause);
+        this.seekBar = findViewById(R.id.seekBar);
+        this.musicTime = findViewById(R.id.musicTime);
     }
 }
