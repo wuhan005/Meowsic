@@ -14,9 +14,13 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SearchListActivity extends AppCompatActivity {
@@ -113,13 +117,77 @@ public class SearchListActivity extends AppCompatActivity {
                 playerIntent.putExtra("artistName", musicItem.get((int) id).getMusicArtist());
                 playerIntent.putExtra("albumPicture", musicItem.get((int) id).getAlbumPicture());
 
+                // Save history
 
-                startActivity(playerIntent);
+                JSONObject historyObject = new JSONObject();
+                try {
+                    historyObject.put("mid", musicItem.get((int) id).getMid());
+                    historyObject.put("musicName", musicItem.get((int) id).getMusicName());
+                    historyObject.put("albumName", musicItem.get((int) id).getAlbumName());
+                    historyObject.put("artistName", musicItem.get((int) id).getMusicArtist());
+                    historyObject.put("albumPicture", musicItem.get((int) id).getAlbumPicture());
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+
+                savePlayHistory(historyObject);
 
                 System.out.println(musicItem.get((int) id).getMid());
+
+                startActivity(playerIntent);
             }
         });
 
+    }
+
+    private void savePlayHistory(JSONObject data){
+        String fileName = "play_history.txt";
+        String originContent = "";
+        JSONArray jsonData;
+
+        try {
+            //Get the file first.
+            FileInputStream fis = this.openFileInput(fileName);
+            int length = fis.available();       // Get the length of the file.
+            byte[] buffer = new byte[length];
+            fis.read(buffer);
+            originContent = new String(buffer, "UTF-8");
+
+            jsonData = new JSONArray(originContent);
+
+
+        }catch (Exception e){
+
+            // Clean the file.
+
+            try {
+                FileOutputStream fos = this.openFileOutput(fileName, MODE_PRIVATE);
+                byte[] bytes = "".getBytes();
+                fos.write(bytes);
+                fos.close();
+            }catch (Exception err){
+
+            }
+
+            jsonData = new JSONArray();
+        }
+
+        try {
+            jsonData.put(data);
+            // Update file.
+
+            try {
+                FileOutputStream fos = this.openFileOutput(fileName, MODE_PRIVATE);
+                byte[] bytes = jsonData.toString().getBytes();
+                fos.write(bytes);
+                fos.close();
+            }catch (Exception err){
+
+            }
+
+        } catch (Exception e) {
+
+        }
     }
 
 }

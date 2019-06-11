@@ -6,12 +6,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.FileInputStream;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.getList();
     }
 
     // 顶部右侧菜单
@@ -36,5 +39,24 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getList(){
+        String fileName = "play_history.txt";
+
+        try {
+            //Get the file first.
+            FileInputStream fis = this.openFileInput(fileName);
+            int length = fis.available();       // Get the length of the file.
+            byte[] buffer = new byte[length];
+            fis.read(buffer);
+            System.out.println("Text:::");
+            String content = new String(buffer, "UTF-8");
+            System.out.println(content);
+
+        }catch (Exception e){
+            System.out.println("Out put:");
+            System.out.println(e);
+        }
     }
 }
