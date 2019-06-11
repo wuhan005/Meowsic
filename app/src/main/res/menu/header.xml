@@ -8,6 +8,9 @@
         android:title="搜索音乐"
         app:actionViewClass="android.widget.SearchView" />
     <item
+        android:id="@+id/cleanList"
+        android:title="清空列表" />
+    <item
         android:id="@+id/about"
         android:title="关于" />
 </menu>

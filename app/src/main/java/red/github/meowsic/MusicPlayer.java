@@ -244,7 +244,6 @@ public class MusicPlayer extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        System.out.println("asdadasdasdasd");
         // Stop the music after exit.
         musicService.stop();
         handler.removeCallbacks(runnable);

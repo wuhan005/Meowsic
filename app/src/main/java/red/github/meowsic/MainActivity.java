@@ -13,10 +13,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String fileName = "play_history.txt";
 
     private JSONArray historyList;
     private ListView musicList;
@@ -52,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
                 searchIntent.setClass(this, SearchActivity.class);
                 startActivity(searchIntent);
                 break;
+
+                // Clean list button.
+            case R.id.cleanList:
+                // Empty the file.
+                try {
+                    FileOutputStream fos = this.openFileOutput(fileName, MODE_PRIVATE);
+                    byte[] bytes = "".getBytes();
+                    fos.write(bytes);
+                    fos.close();
+                }catch (Exception err){
+
+                }
+
+                MusicAdapter adapter = new MusicAdapter(this, R.layout.music_item, new ArrayList<MusicItem>());
+                this.musicList.setAdapter(adapter);
+
             // 关于按钮
             case R.id.about:
                 break;
@@ -61,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void getList(){
         this.musicItem = new ArrayList<>();
-        String fileName = "play_history.txt";
 
         try {
             //Get the file first.
